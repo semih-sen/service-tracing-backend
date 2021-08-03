@@ -1,9 +1,13 @@
 const pool = require("../../helpers/database/database");
 
 const getAllServices = async (req, res, next) => {
-  console.log("ÇAlıştı");
-  await pool
-    .query('SELECT * FROM public."Services"')
+  if(req.query.companyid){
+    let companyId = req.query.companyid
+    await pool
+    .query('SELECT * FROM public."Services" WHERE "schoolId"=$1 and "companyId"=$2', [
+      res.locals.schoolId,
+      companyId
+    ])
     .then((jsonData) => {
       res.status(200).json({
         data: jsonData.rows,
@@ -17,16 +21,55 @@ const getAllServices = async (req, res, next) => {
           err.message,
       })
     );
+  }
+  else if(req.query.serviceId){
+    await pool
+    .query('SELECT * FROM public."Services" WHERE "schoolId"=$1 and "id"=$2', [
+      res.locals.schoolId,
+      req.query.serviceId
+    ])
+    .then((jsonData) => {
+      res.status(200).json({
+        data: jsonData.rows,
+        message: "List of services",
+      });
+    })
+    .catch((err) =>
+      res.status(400).json({
+        message:
+          "An error occurred while getting services. This is error details :" +
+          err.message,
+      })
+    );
+  }
+  else{
+    await pool
+    .query('SELECT * FROM public."Services" WHERE "schoolId"=$1', [
+      res.locals.schoolId
+    ])
+    .then((jsonData) => {
+      res.status(200).json({
+        data: jsonData.rows,
+        message: "List of services",
+      });
+    })
+    .catch((err) =>
+      res.status(400).json({
+        message:
+          "An error occurred while getting services. This is error details :" +
+          err.message,
+      })
+    );
+  }
+  
 };
 
 const addService = async (req, res, next) => {
-  let now = new Date();
-  now.toISOString().split("T")[0];
+
   let body = req.body;
-  console.log(body);
   await pool.query(
-    'INSERT INTO public."Services" ("name","plate","dateOfUpload") VALUES ($1,$2,$3)',
-    [body.name, body.plate, now],
+    'INSERT INTO public."Services" ("schoolId","companyId","name","plate") VALUES ($1,$2,$3,$4)',
+    [res.locals.schoolId, body.companyId, body.name, body.plate],
     (err, result) => {
       if (err) {
         res.status(400).json({
@@ -47,8 +90,8 @@ const addService = async (req, res, next) => {
 const updateService = async (req, res, next) => {
   let body = req.body;
   await pool.query(
-    'UPDATE public."Services" SET "name"=$1, "plate"=$2, "dateOfUpload"=$3 WHERE "id"=$4',
-    [body.name, body.plate, body.dateOfUpload, body.id],
+    'UPDATE public."Services" SET "name"=$1, "plate"=$2, "schoolId"=$3, "companyId"=$4 WHERE "id"=$5',
+    [body.name, body.plate, res.locals.schoolId,body.companyId, body.id],
     (err, result) => {
       if (err) {
         res.status(400).json({

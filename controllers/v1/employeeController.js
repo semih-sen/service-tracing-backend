@@ -1,8 +1,26 @@
 const pool = require("../../helpers/database/database");
 
 const getAllEmployees = async (req, res, next) => {
+  if(req.query.plate){
+    await pool
+    .query('SELECT * FROM public."Employees" WHERE "schoolId"=$1',[res.locals.schoolId])
+    .then((jsonData) =>
+      res.status(200).json({
+        data: jsonData.rows,
+        message: "List of employees",
+      })
+    )
+    .catch((err) =>
+      res.status(400).json({
+        message:
+          "An error occurred while getting employees. This is error details :" +
+          err.message,
+      })
+    );
+  }
+
   await pool
-    .query('SELECT * FROM public."Employees"')
+    .query('SELECT * FROM public."Employees" WHERE "schoolId"=$1',[res.locals.schoolId])
     .then((jsonData) =>
       res.status(200).json({
         data: jsonData.rows,
@@ -19,11 +37,16 @@ const getAllEmployees = async (req, res, next) => {
 };
 const addEmployee = (req, res, next) => {
   let body = req.body;
-  let now = new Date();
-  now.toISOString().split("T")[0];
   pool.query(
-    'INSERT INTO public."Employees" ("serviceId","name","dateOfUpload","phoneNumber","mail") VALUES ($1,$2,$3,$4,$5)',
-    [body.serviceId, body.name, now, body.phoneNumber, body.mail],
+    'INSERT INTO public."Employees" ("schoolId","companyId","serviceId","name","phoneNumber","mail") VALUES ($1,$2,$3,$4,$5,$6)',
+    [
+      res.locals.schoolId,
+      body.companyId,
+      body.serviceId,
+      body.name,
+      body.phoneNumber,
+      body.mail,
+    ],
     (err, result) => {
       if (err) {
         res.status(400).json({

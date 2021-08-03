@@ -21,7 +21,7 @@ const addManager = (req, res, next) => {
   let body = req.body;
 
   pool.query(
-    `INSERT INTO public."Managers"("schoolId","name","phoneNumber","mail") VALUES($1,$2,$3,$4,$5)`,
+    `INSERT INTO public."Managers"("schoolId","name","phoneNumber","mail") VALUES($1,$2,$3,$4)`,
     [body.schoolId,body.name, body.phoneNumber, body.mail],
     (err, data) => {
       if (err) {

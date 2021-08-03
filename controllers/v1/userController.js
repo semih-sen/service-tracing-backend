@@ -61,26 +61,35 @@ const checkPassword = (password, hashedPassword) => {
 
 const login = (req, res, next) => {
   let body = req.body;
-  console.log(body);
-  
+
+
   pool.query(
     'SELECT * FROM public."Users" WHERE "mail"=$1',
     [body.mail],
     (err, result) => {
       if (err) {
         console.error(err);
-      }let user;
-      console.log(result.rowCount);
+      }
+      let user;
+     
       if (result.rowCount > 0) {
         user = result.rows[0];
       }
-      console.log(user);
-      
+      else{
+        res
+        .status(401)
+        .json({ success: false, message: "Check your email or password" });
+      }
+     
+
+      if (user != undefined) {
         if (checkPassword(body.password, user.password)) {
           sendTokenToClient(user, res, 200);
-        
-      } else {
-        res.status(401).json({ message: "Check your email or password" });
+        } else {
+          res
+            .status(401)
+            .json({ success: false, message: "Check your email or password" });
+        }
       }
     }
   );

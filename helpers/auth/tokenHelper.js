@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const pool = require("../database/database");
 
 const getTokenFromUserModel = (user) => {
   const { JWT_SECRET_KEY, JWT_EXPIRE } = process.env;
@@ -20,23 +21,58 @@ const sendTokenToClient = (user, res, status) => {
   const { JWT_COOKIE_EXPIRE, NODE_ENV } = process.env;
 
   // Send To Client With Res
+  
 
-  return res
-    .status(status)
-    .cookie("token", token, {
-      httpOnly: true,
-      expires: new Date(Date.now() + parseInt(JWT_COOKIE_EXPIRE) * 1000 * 60),
-      secure: NODE_ENV === "development" ? false : true,
-    })
-    .json({
-      success: true,
-      token,
-      data: {
-        name: user.name,
-        mail: user.mail,
-        role: user.role,
-      },
-    });
+    if(user.role==="Employee"){
+      let id;
+      pool.query('SELECT "id","serviceId" from public."Employees" where "mail"=$1',[user.mail],(err,result)=>{
+          if(err){
+            console.error(err);
+          }
+          else{
+            return res
+            .status(status)
+            .cookie("token", token, {
+              httpOnly: true,
+              expires: new Date(Date.now() + parseInt(JWT_COOKIE_EXPIRE) * 1000 * 60),
+              secure: NODE_ENV === "development" ? false : true,
+            })
+            .json({
+              success: true,
+              token,
+              data: {
+                id: result.rows[0].id,
+                serviceId: result.rows[0].serviceId,
+                name: user.name,
+                mail: user.mail,
+                role: user.role,
+              },
+            });
+          }
+      });
+      
+    }
+    else{
+      
+        return res
+        .status(status)
+        .cookie("token", token, {
+          httpOnly: true,
+          expires: new Date(Date.now() + parseInt(JWT_COOKIE_EXPIRE) * 1000 * 60),
+          secure: NODE_ENV === "development" ? false : true,
+        })
+        .json({
+          success: true,
+          token,
+          data: {
+            name: user.name,
+            mail: user.mail,
+            role: user.role,
+          },
+        });
+    }
+
+ 
 };
 
 const isTokenIncluded = (req) => {

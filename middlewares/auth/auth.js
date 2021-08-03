@@ -18,7 +18,7 @@ const getAccesToRouteForSuperAdmins = (req, res, next) => {
     if (err) {
       res.status(401).json({ message: err.message });
     }
-    console.log(decoded);
+    
     if (!err) {
       if (decoded.role === "SuperAdmin") {
         next();
@@ -28,6 +28,36 @@ const getAccesToRouteForSuperAdmins = (req, res, next) => {
     }
   });
 };
+
+const getAccesToRouteForAdminsEmployeesAndParents=(req,res,next)=>{
+  const { JWT_SECRET_KEY } = process.env;
+
+  if (!isTokenIncluded(req)) {
+    res.status(401).json({
+      message: "Your token is not valid",
+    });
+    return;
+  }
+  const access_token = getAccesTokenFromHeader(req);
+
+  jwt.verify(access_token, JWT_SECRET_KEY, (err, decoded) => {
+    if (err) {
+      res.status(401).json({ message: err.message });
+      return;
+    }
+    if (!err) {
+      if (
+        decoded.role === "Employee" ||
+        decoded.role === "Manager" ||
+        decoded.role === "Parent"
+      ) {
+        next();
+      } else {
+        res.status(403).json({ message: "You are not acces this route" });
+      }
+    }
+  });
+}
 
 const getAccesToRouteForSuperAdminsAndAdmins = (req, res, next) => {
   const { JWT_SECRET_KEY } = process.env;
@@ -44,7 +74,7 @@ const getAccesToRouteForSuperAdminsAndAdmins = (req, res, next) => {
       res.status(401).json({ message: err.message });
       return;
     }
-    console.log(decoded);
+
     if (!err) {
       if (decoded.role === "SuperAdmin" || decoded.role === "Manager") {
         next();
@@ -69,7 +99,7 @@ const getAccesToRouteForAdmins = (req, res, next) => {
       if (err) {
         res.status(401).json({ message: err.message });
       }
-      console.log(decoded);
+   
       if (!err) {
         if (decoded.role === "Manager") {
           next();
@@ -80,6 +110,33 @@ const getAccesToRouteForAdmins = (req, res, next) => {
     });
   }
 };
+
+const getAccesToRouteForEmployees = (req, res, next) => {
+  const { JWT_SECRET_KEY } = process.env;
+
+  if (!isTokenIncluded(req)) {
+    res.status(401).json({
+      message: "Your token is not valid",
+    });
+  } else {
+    const access_token = getAccesTokenFromHeader(req);
+
+    jwt.verify(access_token, JWT_SECRET_KEY, (err, decoded) => {
+      if (err) {
+        res.status(401).json({ message: err.message });
+      }
+    
+      if (!err) {
+        if (decoded.role === "Employee") {
+          next();
+        } else {
+          res.status(403).json({ message: "You are not acces this route" });
+        }
+      }
+    });
+  }
+};
+
 const getAccesToRouteForAdminsAndEmployees = (req, res, next) => {
   const { JWT_SECRET_KEY } = process.env;
 
@@ -96,7 +153,7 @@ const getAccesToRouteForAdminsAndEmployees = (req, res, next) => {
       res.status(401).json({ message: err.message });
       return;
     }
-    console.log(decoded);
+    
     if (!err) {
       if (decoded.role === "Employee" || decoded.role === "Manager") {
         next();
@@ -122,7 +179,6 @@ const getAccesToRouteForSuperAdminsAdminsAndEmployees = (req, res, next) => {
       res.status(401).json({ message: err.message });
       return;
     }
-    console.log(decoded);
     if (!err) {
       if (
         decoded.role === "Employee" ||
@@ -137,10 +193,39 @@ const getAccesToRouteForSuperAdminsAdminsAndEmployees = (req, res, next) => {
   });
 };
 
+const getAccesToRouteForParents = (req, res, next) => {
+  const { JWT_SECRET_KEY } = process.env;
+
+  if (!isTokenIncluded(req)) {
+    res.status(401).json({
+      message: "Your token is not valid",
+    });
+    return;
+  }
+  const access_token = getAccesTokenFromHeader(req);
+
+  jwt.verify(access_token, JWT_SECRET_KEY, (err, decoded) => {
+    if (err) {
+      res.status(401).json({ message: err.message });
+      return;
+    }
+    if (!err) {
+      if (
+        decoded.role === "Parent"
+      ) {
+        next();
+      } else {
+        res.status(403).json({ message: "You are not acces this route" });
+      }
+    }
+  });
+};
+
 module.exports = {
   getAccesToRouteForSuperAdmins,
   getAccesToRouteForSuperAdminsAndAdmins,
-  getAccesToRouteForAdmins,
+  getAccesToRouteForAdmins,getAccesToRouteForEmployees,
   getAccesToRouteForAdminsAndEmployees,
-  getAccesToRouteForSuperAdminsAdminsAndEmployees
+  getAccesToRouteForSuperAdminsAdminsAndEmployees,
+  getAccesToRouteForParents,getAccesToRouteForAdminsEmployeesAndParents
 };

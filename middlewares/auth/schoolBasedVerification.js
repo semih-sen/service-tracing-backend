@@ -30,6 +30,23 @@ const getAccessToManagersOwnSchool = (req, res, next) => {
         }
       );
     }
+    else if(decoded.role === "Employee"){
+      let mail = decoded.mail;
+      pool.query(
+        'SELECT * FROM public."Employees" WHERE "mail"=$1',
+        [mail],
+        (err, result) => {
+          if (err) {
+              console.error(err);
+              return;
+          }
+          let schoolId=result.rows[0].schoolId;
+          res.locals.schoolId=schoolId;
+          
+          next();
+        }
+      );
+    }
   });
 };
 
