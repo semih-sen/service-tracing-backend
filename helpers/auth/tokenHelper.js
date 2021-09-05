@@ -30,6 +30,7 @@ const sendTokenToClient = (user, res, status) => {
             console.error(err);
           }
           else{
+            
             return res
             .status(status)
             .cookie("token", token, {

@@ -3,6 +3,35 @@ const amqp = require("amqplib");
 const moment = require("moment");
 moment.locale("tr");
 
+const getRollCallDetails= async (req, res, next) => {
+  await pool.query(`select * from "rollcallsview" where "parentId"=$1 order by "datetime" desc`,[res.locals.parentId]).then(result=>{
+    res.status(200).json({
+      data:result.rows
+    })
+  }).catch(err=>{
+    res.status(500).json({success: false, message: error.message})
+  })
+}
+
+
+const getRollCallForManager = async (req, res, next) => {
+  await pool
+  .query('SELECT * FROM public."rollcallsview" where "schoolId"=$1 order by "datetime" desc',[res.locals.schoolId])
+  .then((jsonData) =>
+    res.status(200).json({
+      data: jsonData.rows,
+      message: "List of roll calls",
+    })
+  )
+  .catch((err) =>
+    res.status(400).json({
+      message:
+        "An error occurred while getting roll cals. It is detail of the error: " +
+        err.message,
+    })
+  );
+}
+
 const getRollCalls = async (req, res, next) => {
   if (req.query.parentId) {
     await pool
@@ -25,7 +54,7 @@ const getRollCalls = async (req, res, next) => {
       );
   } else {
     await pool
-      .query('SELECT * FROM public."rollcalls")')
+      .query('SELECT * FROM public."rollcalls"')
       .then((jsonData) =>
         res.status(200).json({
           data: jsonData.rows,
@@ -125,5 +154,7 @@ module.exports = {
   getRollCalls,
   addRollCall,
   updateRollCall,
-  deleteRollCall
+  getRollCallDetails,
+  deleteRollCall,
+  getRollCallForManager
 };

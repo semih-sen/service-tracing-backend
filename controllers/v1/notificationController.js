@@ -1,7 +1,7 @@
 const pool = require("../../helpers/database/database");
 
 const getAllNotifications = async (req,res,next)=>{
-    await pool.query('SELECT * FROM "notifications" WHERE "parentId"=$1',[res.locals.parentId])
+    await pool.query('SELECT * FROM "notifications" WHERE "parentId"=$1 ORDER BY "id" DESC',[res.locals.parentId])
     .then((jsonData) =>
       res.status(200).json({
         data: jsonData.rows,

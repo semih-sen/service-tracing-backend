@@ -1,9 +1,30 @@
 const pool = require("../../helpers/database/database");
 
 const getAllEmployees = async (req, res, next) => {
-  if(req.query.plate){
+  if (req.query.plate) {
     await pool
-    .query('SELECT * FROM public."Employees" WHERE "schoolId"=$1',[res.locals.schoolId])
+      .query('SELECT * FROM public."Employees" WHERE "schoolId"=$1', [
+        res.locals.schoolId,
+      ])
+      .then((jsonData) =>
+        res.status(200).json({
+          data: jsonData.rows,
+          message: "List of employees",
+        })
+      )
+      .catch((err) =>
+        res.status(400).json({
+          message:
+            "An error occurred while getting employees. This is error details :" +
+            err.message,
+        })
+      );
+  }
+  else if (req.query.id){
+    await pool
+    .query('SELECT * FROM public."Employees" WHERE "schoolId"=$1 and "id"=$2', [
+      res.locals.schoolId,req.query.id
+    ])
     .then((jsonData) =>
       res.status(200).json({
         data: jsonData.rows,
@@ -18,22 +39,25 @@ const getAllEmployees = async (req, res, next) => {
       })
     );
   }
-
-  await pool
-    .query('SELECT * FROM public."Employees" WHERE "schoolId"=$1',[res.locals.schoolId])
-    .then((jsonData) =>
-      res.status(200).json({
-        data: jsonData.rows,
-        message: "List of employees",
-      })
-    )
-    .catch((err) =>
-      res.status(400).json({
-        message:
-          "An error occurred while getting employees. This is error details :" +
-          err.message,
-      })
-    );
+  else {
+    await pool
+      .query('SELECT * FROM public."Employees" WHERE "schoolId"=$1', [
+        res.locals.schoolId,
+      ])
+      .then((jsonData) =>
+        res.status(200).json({
+          data: jsonData.rows,
+          message: "List of employees",
+        })
+      )
+      .catch((err) =>
+        res.status(400).json({
+          message:
+            "An error occurred while getting employees. This is error details :" +
+            err.message,
+        })
+      );
+  }
 };
 const addEmployee = (req, res, next) => {
   let body = req.body;
@@ -65,12 +89,14 @@ const addEmployee = (req, res, next) => {
 };
 const updateEmployee = async (req, res, next) => {
   let body = req.body;
+  
   await pool.query(
-    'UPDATE public."Employees" SET "serviceId"=$1, "name"=$2,"dateOfUpload"=$3,"phoneNumber"=$4,"mail"=$5 WHERE "id"=$6',
+    'UPDATE public."Employees" SET "serviceId"=$1, "companyId"=$2, "schoolId"=$3, "name"=$4, "phoneNumber"=$5, "mail"=$6 WHERE "id"=$7',
     [
       body.serviceId,
+      body.companyId,
+      body.schoolId,
       body.name,
-      body.dateOfUpload,
       body.phoneNumber,
       body.mail,
       body.id,

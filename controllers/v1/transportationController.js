@@ -1,7 +1,7 @@
 const pool = require("../../helpers/database/database");
 
 const getAllTransportations= async (req, res, next) => {
-    await pool.query('SELECT * FROM public."Transportations"').then((jsonData) =>
+    await pool.query('SELECT * FROM transportationview where "schoolId"=$1',[res.locals.schoolId]).then((jsonData) =>
     res.status(200).json({
       data: jsonData.rows,
       message: "List of transportations",

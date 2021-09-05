@@ -34,11 +34,7 @@ router.get("", (req, res) => {
       name: "Raporlar",
       value: "reports",
     },
-    {
-      id: 7,
-      name: "Ayarlar",
-      value: "settings",
-    },
+    
   ]);
 });
 

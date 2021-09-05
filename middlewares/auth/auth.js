@@ -4,6 +4,31 @@ const {
   getAccesTokenFromHeader,
 } = require("../../helpers/auth/tokenHelper");
 
+const getAccesToRouteForAdminsAndParents = (req, res, next) => {
+  const { JWT_SECRET_KEY } = process.env;
+
+  if (!isTokenIncluded(req)) {
+    res.status(401).json({
+      message: "Your token is not valid",
+    });
+  }
+  const access_token = getAccesTokenFromHeader(req);
+
+  jwt.verify(access_token, JWT_SECRET_KEY, (err, decoded) => {
+    if (err) {
+      res.status(401).json({ message: err.message });
+    }
+    
+    if (!err) {
+      if (decoded.role === "Parent"|| decoded.role === "Manager") {
+        next();
+      } else {
+        res.status(403).json({ message: "You are not acces this route" });
+      }
+    }
+  });
+};
+
 const getAccesToRouteForSuperAdmins = (req, res, next) => {
   const { JWT_SECRET_KEY } = process.env;
 
@@ -227,5 +252,5 @@ module.exports = {
   getAccesToRouteForAdmins,getAccesToRouteForEmployees,
   getAccesToRouteForAdminsAndEmployees,
   getAccesToRouteForSuperAdminsAdminsAndEmployees,
-  getAccesToRouteForParents,getAccesToRouteForAdminsEmployeesAndParents
+  getAccesToRouteForParents,getAccesToRouteForAdminsEmployeesAndParents, getAccesToRouteForAdminsAndParents
 };
