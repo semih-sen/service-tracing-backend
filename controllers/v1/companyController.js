@@ -105,6 +105,32 @@ const updateCompany = (req, res, next) => {
     }
   );
 };
-const deleteCompany = (req, res, next) => {};
+const deleteCompany = async(req, res, next) => {
+  let body = req.body;
+  await pool.query(
+    'DELETE FROM public."Companies" WHERE "id"=$1',
+    [body.id],
+    (err, result) => {
+      if (err) {
+        res.status(400).json({
+          message:
+            "An error occurred while deleting. This is error details :" +
+            err.message,
+        });
+        console.error(err);
+      } else {
+        if (result.rowCount > 0) {
+          res.status(200).json({
+            message: "Succesfully deleted",
+          });
+        } else {
+          res.status(400).json({
+            message: "Not found",
+          });
+        }
+      }
+    }
+  );
+};
 
 module.exports = { getAllCompanies, addCompany, updateCompany, deleteCompany };

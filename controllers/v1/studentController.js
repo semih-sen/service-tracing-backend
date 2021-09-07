@@ -81,17 +81,17 @@ const getStudentsWithParentId=async(req, res,next) =>{
 const addStudent = async (req, res, next) => {
   let body = req.body;
   await pool.query(
-    'INSERT INTO public."Students"("name","parentId","schoolId","serviceId","number","className","address","phoneNumber","note") VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+    'INSERT INTO public."Students"("name","parentId","schoolId","serviceId","number","className","address","phoneNumber","note","orderNumber","orderNumber2") VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
     [
       body.name,
       body.parentId,
-      body.schoolId,
+      res.locals.schoolId,
       body.serviceId,
       body.number,
       body.className,
       body.address,
       body.phoneNumber, 
-      body.note
+      body.note,0,0
     ],
     (err, result) => {
       if (err) {

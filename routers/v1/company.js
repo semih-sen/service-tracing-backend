@@ -10,5 +10,6 @@ const {getAllCompanies,addCompany,updateCompany,deleteCompany} =require("../../c
 router.get("/",getAccesToRouteForAdminsAndEmployees,getAccessToManagersOwnSchool,getAllCompanies)
 router.post("/",getAccesToRouteForAdminsAndEmployees,getAccessToManagersOwnSchool,addCompany)
 router.put("/",getAccesToRouteForAdminsAndEmployees,getAccessToManagersOwnSchool,updateCompany)
+router.delete("/",getAccesToRouteForAdminsAndEmployees,getAccessToManagersOwnSchool,deleteCompany)
 
 module.exports =router;

@@ -16,7 +16,7 @@ const router = express.Router();
 router.get("/", getAccesToRouteForAdminsAndEmployees,getAccessToManagersOwnSchool,getAllStudents);
 router.get("/detail", getAccesToRouteForAdminsAndEmployees,getAccessToManagersOwnSchool,getStudentDetail);
 router.get("/parent",getAccesToRouteForParents,getAccessToParentsOwnStudent,getStudentsWithParentId)
-router.post("/",getAccesToRouteForAdmins, addStudent);
+router.post("/",getAccesToRouteForAdmins,getAccessToManagersOwnSchool,addStudent);
 router.put("/", getAccesToRouteForAdminsAndParents,updateStudent);
 router.put("/ordernumber", getAccesToRouteForAdminsAndEmployees,updateStudentOrderNumber);
 router.put("/ordernumber2", getAccesToRouteForAdminsAndEmployees,updateStudentOrderNumber2);
