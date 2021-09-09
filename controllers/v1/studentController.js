@@ -58,6 +58,25 @@ const getStudentDetail = async (req, res, next) => {
     );
 };
 
+const getStudentsWithServiceId = async (req, res, next) => {
+  await pool
+    .query('SELECT * FROM public."Students" WHERE "serviceId"=$1',[res.locals.serviceId])
+    .then((jsonData) =>
+      res.status(200).json({
+        data: jsonData.rows,
+        message: "List of students",
+      })
+    )
+    .catch((err) =>
+      res.status(400).json({
+        message:
+          "An error occurred while getting students. It is detail of the error: " +
+          err.message,
+      })
+    );
+  
+}
+
 const getStudentsWithParentId=async(req, res,next) =>{
  
     await pool
