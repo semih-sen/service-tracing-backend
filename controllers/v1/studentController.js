@@ -232,6 +232,6 @@ const deleteStudent = async (req, res, next) => {
 module.exports = {
   getAllStudents,
   addStudent,
-  updateStudent,
+  updateStudent,getStudentsWithServiceId,
   deleteStudent,updateStudentOrderNumber,updateStudentOrderNumber2,getStudentDetail,getStudentsWithParentId
 };
