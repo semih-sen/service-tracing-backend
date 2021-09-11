@@ -13,26 +13,34 @@ router.get("", (req, res) => {
       name: "Öğrenciler",
       value: "students",
     },
-    
     {
       id: 3,
+      name: "Veliler",
+      value: "parents",
+    },
+    {
+      id: 4,
       name: "Servisler",
       value: "services",
     },{
-      id: 4,
+      id: 5,
       name: "Servis Çalışanları",
       value: "employees",
     },
     {
-      id: 5,
+      id: 6,
       name: "Servis Firmaları",
       value: "companies",
     },
 
     {
-      id: 6,
+      id: 7,
       name: "Raporlar",
       value: "reports",
+    },{
+      id: 8,
+      name: "Hakkında",
+      value: "about",
     },
     
   ]);

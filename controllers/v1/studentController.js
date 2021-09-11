@@ -40,6 +40,22 @@ const getAllStudents = async (req, res, next) => {
 
 const getStudentDetail = async (req, res, next) => {
   // console.log(`${process.env.DB_USERNAME}`);
+  if(req.query.parentId){await pool
+    .query('SELECT * FROM "studentsView" WHERE "schoolId"=$1 and "parentId"=$2',[res.locals.schoolId,req.query.parentId])
+    .then((jsonData) =>
+      res.status(200).json({
+        data: jsonData.rows,
+        message: "List of students details",
+      })
+    )
+    .catch((err) =>{
+    next(err)
+      res.status(400).json({
+        message:
+          "An error occurred while getting students. It is detail of the error: " +
+          err.message,
+      })}
+    );}else{
   await pool
     .query('SELECT * FROM "studentsView" WHERE "schoolId"=$1',[res.locals.schoolId])
     .then((jsonData) =>
@@ -55,7 +71,7 @@ const getStudentDetail = async (req, res, next) => {
           "An error occurred while getting students. It is detail of the error: " +
           err.message,
       })}
-    );
+    );}
 };
 
 const getStudentsWithServiceId = async (req, res, next) => {
